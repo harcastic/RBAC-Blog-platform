@@ -9,11 +9,11 @@ router.get('/admin', verifyToken, authorizeRoles("admin"),  async (req, res) => 
 })
 
 router.get('/author', verifyToken, authorizeRoles("author"), async (req, res) => {
-    res.json({message : "Welcome Manager"});
+    res.json({message : "Welcome author"});
 })
 
 router.get('/reader' ,verifyToken, authorizeRoles("reader") ,async (req, res) =>{
-    res.json({message : "welcome user"});
+    res.json({message : "welcome reader"});
 })
 
 export default router;
