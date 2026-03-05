@@ -1,17 +1,23 @@
-import Post from "../models/postModel";
 import express from 'express';
-// import {uuid.V4} from 'uuid';
-import createPost, { deletePost, updatePost } from "../controllers/postController";
+import verifyToken from '../middlewares/authMiddleware.js';
+import authorizeRoles from '../middlewares/roleMiddleware.js';
+import createPost, { deletePost, getAllBlogs, getBlogsById, updatePost } from "../controllers/postController.js";
 
 const router = express.Router();
 
-// Index
-router.get('/', )
-// Create 
-router.post('/:id', createPost);
-// Edit
-router.get("/")
-// Update 
-router.put('/:id', updatePost);
-// Delete
-router.delete('/:id', deletePost);
+// GET ALL BLOGS
+router.get('/', getAllBlogs);
+
+// GET SINGLE BLOG
+router.get('/:id', getBlogsById);
+
+// CREATE BLOG
+router.post('/', verifyToken, authorizeRoles("author"), createPost);
+
+// UPDATE  BLOG
+router.put('/:id', verifyToken, authorizeRoles("author"), updatePost);
+
+// Delete BLOG
+router.delete('/:id', verifyToken, authorizeRoles("admin"), deletePost);
+
+export default router;

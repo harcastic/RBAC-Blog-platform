@@ -5,7 +5,7 @@ dotenv.config();
 import dbConnect from './config/dbConnect.js';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
-
+import postRoutes from './routes/postRoutes.js';
 
 
 dbConnect();
@@ -20,7 +20,7 @@ app.get("/", (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
-// app.use('/api/posts', postRoutes);
+app.use('/api/blogs', postRoutes);
 
 
 app.listen(port , ()=>{

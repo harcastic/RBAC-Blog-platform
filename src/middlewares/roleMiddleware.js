@@ -1,17 +1,26 @@
-
 const roleHierarchy = {
     admin: 3,
     author: 2,
     reader: 1
 };
 
-const authorizedRoles = (minimumRole) => {
+const authorizeRoles = (minimumRole) => {
     return (req, res, next) => {
-        if (roleHierarchy[req.user.role] < roleHierarchy[minimumRole]) {
-            return res.status(403).json({ message: "Access Denied" });
+
+        if (!req.user) {
+            return res.status(401).json({
+                message: "Authentication required"
+            });
         }
+
+        if (roleHierarchy[req.user.role] < roleHierarchy[minimumRole]) {
+            return res.status(403).json({
+                message: "Access Denied"
+            });
+        }
+
         next();
     };
 };
 
-export default authorizedRoles;
+export default authorizeRoles;

@@ -4,7 +4,15 @@ import Post from '../models/postModel.js';
 const createPost = async (req, res) => {
     try {
         const { title, content }  = req.body;
+
+        if(!title || !content){
+            return res.status(400).json({
+                message: "Title and content required"
+            });
+        }
+
         const post = await Post.create({title, content, author : req.user.id});
+        console.log(post);
 
         return res.status(201).json({
             message : "post created successfully",
@@ -20,16 +28,24 @@ const createPost = async (req, res) => {
 export default createPost;
 
 // GET ALL BLOGS
-// GET ALL BLOGS (Feed Route)
 export const getAllBlogs = async (req, res) => {
     try {
-        const posts = await Post.find().sort({ createdAt: -1 });
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+
+        const posts = await Post.find()
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .sort({ createdAt: -1 });
 
         return res.status(200).json({
             message: "Blogs fetched successfully",
-            count: posts.length,
+            page,
+            limit,
             posts
         });
+
     } 
     catch (error) {
         return res.status(500).json({
@@ -38,7 +54,7 @@ export const getAllBlogs = async (req, res) => {
     }
 };
 
-//  GET BLOGS ROUTE
+//  GET SINGLE BLOGS ROUTE / EDIT ROUTE
 export const getBlogsById = async(req, res) => {
     try {
         const {id} = req.params;
@@ -62,40 +78,11 @@ export const getBlogsById = async(req, res) => {
     }
 }
 
-//  EDIT BLOG ROUTE
-export const getEditPost = async(req , res) => {
-    try {
-        const { id } = req.params;
-        const post = await Post.findById(id);
-        if(!post) {
-            return res.status(404).json({
-                message : "ERROR! No blog found"
-            });
-        }
-
-        return res.status(200).json({
-            message : "Blog found!",
-            post,
-        })
-    } 
-    catch (error) {
-        return res.status(500).json({
-        message : "Server Error"
-        })
-    }
-}
-
 // UPDATE BLOG ROUTE
 export const updatePost = async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, content } = req.body;
-        const updatedPost = {title, content };
-
-        const post = await Post.findByIdAndUpdate(id, updatedPost,{
-            new : true,
-            runValidators : true 
-        });
+        const post = await Post.findById(id);
 
         if(!post){
             return res.status(404).json({
@@ -103,7 +90,18 @@ export const updatePost = async (req, res) => {
             })
         }
 
-        res.status(200).json({
+        if(post.author.toString() !== req.user.id && req.user.role !== "admin"){
+            return res.status(403).json({
+                message : "user not authorized"
+            });
+        }
+        
+        const { title, content } = req.body;
+        post.title = title;
+        post.content = content;
+        await post.save();
+
+        return res.status(200).json({
             message: "Post updated successfully",
             post
         });
@@ -121,13 +119,21 @@ export const deletePost = async (req, res) => {
 
     try {
         const { id } = req.params;
-        const deletedBlog = await Post.findByIdAndDelete(id);
-
-        if(!deletedBlog){
+        const post = await Post.findById(id);
+        
+        if(!post){
             return res.status(404).json({
                 message : "Blog not found"
             })
+        }   
+
+        if(post.author.toString() !== req.user.id && req.user.role !== "admin"){
+            return res.status(403).json({
+                message : "Not authorized"
+            })
         }
+
+        const deletedBlog = await Post.findByIdAndDelete(id);
 
         return res.status(200).json({
             message : "blog deleted successfully",
