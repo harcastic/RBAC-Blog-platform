@@ -1,4 +1,4 @@
-# RBAC Practice - Role-Based Access Control API
+# RBAC BLOG PLATFROM BACKEND - Role-Based Access Control API
 
 A Node.js/Express API demonstrating Role-Based Access Control (RBAC) implementation with MongoDB, JWT authentication, and bcrypt password hashing.
 
@@ -23,8 +23,8 @@ A Node.js/Express API demonstrating Role-Based Access Control (RBAC) implementat
 
 1. **Clone the repository**
 ```bash
-git clone <repository-url>
-cd RBAC-practice
+git clone https://github.com/harcastic/RBAC-Blog-platform.git
+cd RBAC-Blog-platform
 ```
 
 2. **Install dependencies**
@@ -34,7 +34,7 @@ npm install
 
 3. **Create a `.env` file in the root directory**
 ```env
-PORT=5000
+PORT= 8001 
 CONNECTION_STRING=mongodb://localhost:27017/rbac-practice
 JWT_SECRET=your-secret-key-here
 ```
@@ -58,15 +58,15 @@ POST /api/auth/register
 Content-Type: application/json
 
 {
-  "username": "john_doe",
-  "email": "john@example.com",
+  "username": "anonymous_101",
+  "email": "anonymous_101@example.com",
   "password": "securePassword123",
   "role": "reader"  // optional, defaults to "reader"
 }
 
 Response: 201 Created
 {
-  "message": "User registered successfully - john_doe",
+  "message": "User registered successfully - anonymous_101",
   "user": { user object }
 }
 ```
@@ -77,7 +77,7 @@ POST /api/auth/login
 Content-Type: application/json
 
 {
-  "username": "john_doe",
+  "username": "anonymous_101",
   "password": "securePassword123"
 }
 
@@ -107,7 +107,7 @@ Authorization: Bearer <token>
 
 Response: 200 OK
 {
-  "message": "Welcome Manager"
+  "message": "Welcome Author"
 }
 ```
 
@@ -118,7 +118,7 @@ Authorization: Bearer <token>
 
 Response: 200 OK
 {
-  "message": "welcome user"
+  "message": "welcome Reader"
 }
 ```
 
